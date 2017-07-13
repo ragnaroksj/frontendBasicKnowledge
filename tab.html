@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Tab</title>
+  <style>
+      .tab {
+        width: 640px;
+      }
+
+      ul {
+        padding-left: 0;
+      }
+
+      .tab-nav li {
+        list-style: none;
+        display: inline-block;
+        padding: 5px;
+        border: 1px solid #ccc;
+      }
+
+      .tab-nav .active {
+        background: red;
+      } 
+
+      .tab-content .inactive {
+        display: none;
+      }
+
+      .tab-content > div:nth-of-type(2) {
+        color: orange;
+      }
+  </style>
+  <script type="text/javascript">
+    var tabWidget = {
+      init: function(id) {
+        var tabWidgetNav = document.querySelector(id + ' .tab-nav');
+        var tabWidgetNavItems = document.querySelectorAll(id + ' .tab-nav a');
+        var tabContentItems = document.querySelectorAll(id + ' .tab-content > div');
+
+        tabWidget.updateState(tabWidgetNavItems);
+        tabWidget.updateState(tabContentItems);
+        tabWidget.addEvents(tabWidgetNav, tabWidgetNavItems, tabContentItems);
+      },
+
+      updateState: function(tabItems, activeElm) {
+        if (arguments.length === 1) {
+          activeElm = tabItems[0];
+        }
+
+        tabItems.forEach(function(item) {
+            item.className = 'inactive';
+        });
+
+        activeElm.className = 'active';
+      },
+
+      addEvents: function(tabWidgetNav, tabWidgetNavItems, tabContentItems) {
+        tabWidgetNav.addEventListener('click', function(e){
+          if (e.target && e.target.nodeName === 'A') {
+            tabWidget.updateState(tabWidgetNavItems, e.target);
+            tabWidget.updateState(tabContentItems, document.getElementById(e.target.getAttribute('href').replace('#','')));
+          }
+        });
+      }
+    }
+
+    window.onload = function() {
+      tabWidget.init('#tab-widget-1');
+      tabWidget.init('#tab-widget-2');
+    }
+  </script>
+  </head>
+  <body>
+    <div id="tab-widget-1" class="tab widget">
+      <ul class="tab-nav">
+        <li><a href="#tab1">Tab 1</a></li>
+        <li><a href="#tab2">Tab 2</a></li>
+        <li><a href="#tab3">Tab 3</a></li>
+      </ul>
+      <div class="tab-content">
+        <div id="tab1">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+        <div id="tab2"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+        <div id="tab3"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+      </div>
+    </div>
+
+    <div id="tab-widget-2" class="tab widget">
+      <ul class="tab-nav">
+        <li><a href="#tab2-1">Tab 1</a></li>
+        <li><a href="#tab2-2">Tab 2</a></li>
+        <li><a href="#tab2-3">Tab 3</a></li>
+      </ul>
+      <div class="tab-content">
+        <div id="tab2-1">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+        <div id="tab2-2"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+        <div id="tab2-3"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+      </div>
+    </div>
+  </body>
+</html>

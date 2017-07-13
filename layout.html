@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<head>
+    <title>Table</title>
+<style>
+    header, section li, article, footer {
+      border: 1px solid #ccc;
+    }
+
+    section {
+      width: 20%;
+      float: left;
+    }
+
+    ul {
+      padding-left: 0;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    li {
+      list-style: none;
+      padding-top: 100%;
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    .article {
+      float: left;
+      margin: 20px 0 20px 3%;
+      width: 77%;
+    }
+
+    article {
+      margin-bottom: 20px;
+      min-height: 150px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    footer {
+      clear: both;
+    }
+
+    @media screen and (max-width: 640px) {
+      section, article {
+        float: none;
+        width: 100%;
+      }
+
+      .article {
+        float: left;
+        margin-left: 0;
+        width: 100%;
+      }
+    }
+</style>
+</head>
+<body>
+  <header>header block</header>
+  <section>
+    <ul>
+      <li>section block 1</li>
+      <li>section block 2</li>
+      <li>section block 3</li>
+    </ul>
+  </section>
+  <div class="article">
+    <article>article 1</article>
+    <article>article 2</article>
+    <article>article 3</article>
+  </div>
+  <footer>footer block</footer>
+</body>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Contact Form</title>
+  <style>
+      
+  </style>
+  <script type="text/javascript">
+    
+    var contactForm = {
+      add: () => {
+        var li = document.createElement('li');
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+          var span = document.createElement('span');
+          span.innerText = (i === inputs.length - 1) ? 'del' : inputs[i].value ;
+          span.className = (i === inputs.length -1 ) ? 'del' : 'val';
+          li.appendChild(span);
+        }
+        document.getElementById('handbook').appendChild(li);
+      }
+    };
+
+    window.onload = function() {
+      document.getElementById('add').addEventListener('click', function(){
+        contactForm.add();
+      });
+
+      document.getElementById('handbook').addEventListener('click', function(e){
+        if(e.target && e.target.className === 'del') {
+          e.target.parentNode.remove();
+        }
+      });
+    }
+  </script>
+  </head>
+  <body>
+    <form>
+      <label for="name">Name</label>
+      <input type="text" name="name" id="name" value="" />
+      <label for="address">Address</label>
+      <input type="text" name="address" id="address" value="" />
+      <label for="phone">Phone</label>
+      <input type="text" name="phone" id="phone" value="" />
+      <input type="button" id="add" value="Add" />
+    </form>
+    <ul id="handbook"></ul>
+  </body>
+</html>

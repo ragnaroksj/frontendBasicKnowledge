@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+  <style>
+    .image-list {
+      padding-left: 0;
+    }
+    
+    .image-list li {
+      list-style: none;
+      display: inline-block;
+      border: 1px solid #ccc;
+      width: 50px;
+      height: 50px;
+      overflow: hidden;
+      margin: 5px;
+    }
+    
+    .main-image {
+      border: 1px solid #ccc;
+      display: inline-block;
+    }
+    
+    img {
+      display: block;
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+  <script type="text/javascript">
+    var mosicWidget = {
+      init: function() {
+        $('.image-list').on('click', 'li', function(){
+          $('.main-image img').attr('src', $(this).find('img').data('original'));
+          $('.main-image img').attr('data-index', $(this).find('img').data('index'));
+        });
+        mosicWidget.autoRun();          
+      },
+
+      change: function() {
+        $('.image-list li')[(parseInt($('.main-image img').attr('data-index')) + 1)%3].click();
+      },
+
+      autoRun: function() {
+        var t = setInterval(mosicWidget.change, 5000);
+      }
+    };
+          
+    $(function(){
+      mosicWidget.init();
+    });
+</script>
+
+</head>
+<body>
+  <div class="main-image">
+    <img data-index="0" src="https://junphotographyblog.files.wordpress.com/2017/05/dsc04961-copy1-e1494436940727.jpg?w=564&h=422&crop=1" alt='image1' />
+  </div>
+  <ul class="image-list">
+    <li><img data-index="0" src="https://junphotographyblog.files.wordpress.com/2017/05/dsc04961-copy1-e1494436940727.jpg?w=564&h=422&crop=1" alt='image1' data-original='https://junphotographyblog.files.wordpress.com/2017/05/dsc04961-copy1-e1494436940727.jpg?w=564&h=422&crop=1' /></li>
+    <li><img data-index="1" src="https://junphotographyblog.files.wordpress.com/2017/04/img_2387.jpg?w=564&h=422&crop=1" alt='image2' data-original='https://junphotographyblog.files.wordpress.com/2017/04/img_2387.jpg?w=564&h=422&crop=1' /></li>
+    <li><img data-index="2" src="https://junphotographyblog.files.wordpress.com/2017/04/dsc04790.jpg?w=564&h=422&crop=1" alt='image3' data-original='https://junphotographyblog.files.wordpress.com/2017/04/dsc04790.jpg?w=564&h=422&crop=1' /></li>
+  </ul>
+</body>
+</html>

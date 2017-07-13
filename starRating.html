@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<head>
+    <title>Star Rating</title>
+<style>
+    .star-rating {
+        direction: rtl;
+        overflow: auto;
+        width: 90px;
+    }
+
+    .star-rating li {
+        float: right;
+        color: #ccc;
+        cursor: pointer;
+        list-style: none;
+        font-size: 16px;
+        width: 16px;
+    }
+
+    .star-rating li:hover,
+    .star-rating li:hover ~ li {
+        color: yellow;
+    }
+
+    .star-rating .activeStar, .activeStar ~ li {
+        color: orange;
+    }
+</style>
+<script type="text/javascript">
+    var starRating = function() {
+        var starRatingContainer = document.getElementById('starRating');
+        var starRatingItems = starRatingContainer.children;
+        var starRatingItemsLength = starRatingItems.length;
+    
+        starRatingContainer.addEventListener('click', function(e) {
+            if (e.target && e.target.nodeName === 'LI') {
+                for(var i = 0; i < starRatingItemsLength; i++) {
+                    starRatingItems[i].className = 'inactiveStar';
+                }       
+                e.target.className = 'activeStar';
+            }
+        });
+    };
+
+    window.onload = function() {
+        starRating();
+    }
+</script>
+</head>
+<body>
+    <ul id="starRating" class="star-rating">
+        <li>&#9733;</li>
+        <li>&#9733;</li>
+        <li>&#9733;</li>
+        <li>&#9733;</li>
+        <li>&#9733;</li>
+    </ul>
+</body>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+  <style>
+    .title {
+      background: #eee;
+      height: 50px;
+      line-height: 50px;
+    }
+
+    .collapsed {
+      max-height: 50px;
+    }
+
+    .expanded {
+      max-height: 1000px;
+    }
+
+    .accordion-item {
+      overflow: hidden;
+      transition: all 0.5s;
+    }
+  </style>
+  <script type="text/javascript">
+  var accordionWidget = {
+    init: function() {
+      document.querySelectorAll('.accordion-item').forEach(function(item, index){
+        item.className += ' collapsed';
+      });
+
+      document.getElementById('accordion').addEventListener('click', function(e) {
+
+        if (e.target && e.target.className === 'title') {
+          var collpasedIndex = e.target.parentNode.className.indexOf('collapsed');
+          var expandedIndex = e.target.parentNode.className.indexOf('expanded');
+          if (collpasedIndex !== -1 ) {
+            e.target.parentNode.classList.remove('collapsed');
+            e.target.parentNode.className += ' expanded';
+          } else {
+            e.target.parentNode.classList.remove('expanded');
+            e.target.parentNode.className += ' collapsed';
+          }
+        }
+      });
+    }
+  };
+
+  window.onload = function() {
+    accordionWidget.init();
+  }
+  </script>
+
+</head>
+<body>
+  <div id="accordion">
+    <div class="accordion-item">
+      <div class="title">title 1</div>
+      <div>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="title">title 2</div>
+      <div>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="title">title 3</div>
+      <div>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</div>
+    </div>
+  </div>
+</body>
+</html>
