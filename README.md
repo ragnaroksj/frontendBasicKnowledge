@@ -299,6 +299,230 @@ Performance Improvement:
 9. minify the js and css
 10. reduce cookie size
 
+18. What is "use strict";? what are the advantages and disadvantages to using it?
+Strict mode helps out in a couple ways:
+- It catches some common coding bloopers, throwing exceptions.
+- It prevents, or throws errors, when relatively "unsafe" actions are taken (such as gaining access to the global object).
+- It disables features that are confusing or poorly thought out.
+- Prevents accidental globals. Without strict mode, assigning a value to an undeclared variable automatically creates a global variable with that name. This is one of the most common errors in JavaScript. In strict mode, attempting to do so throws an error.
+- Eliminates this coercion. Without strict mode, a reference to a this value of null or undefined is automatically coerced to the global. This can cause many headfakes and pull-out-your-hair kind of bugs. In strict mode, referencing  a 'this' value of null or undefined throws an error.
+
+19. What is the difference between .get(), [], and .eq()?
+get() returns the DOM element matched by the selector.
+eq() returns the jQuery Object eq().get(0) = get()
+[] returns the Dom element = get()
+
+20. What is the difference between $ and $.fn? Or just what is $.fn.
+$ = function(){}
+$.fn = $.prototype = {};
+
+21. Window.onload和$(document).ready()
+window.onload: execute code after all resouces are loaded, 一次只能保存对一个函数的引用，多次绑定函数只会覆盖前面的函数。
+$(document).ready(): excute code after DOM is loaded, 多次使用而注册不同的事件处理程序
+
+22. Prototype & inheritance
+All objects in JavaScript inherit properties and methods from Object.prototype. These inherited properties and methods are constructor, hasOwnProperty (), isPrototypeOf (), propertyIsEnumerable (), toLocaleString (), toString (), and valueOf (). ECMAScript 5 also adds 4 accessor methods to Object.prototype.
+Prototype: Each object has an internal property called prototype, which links to another object
+function inherit(o){
+function F(){};
+F.prototype = o;
+return new F(); 
+}
+
+function extend(child, parent){
+child.prototype = inherit(parent.prototype);
+child.prototype.constructor = child;
+child.parent = parent.prototype;
+}
+
+
+call superclass constructor and also call a parent method after overriding
+superObject.apply(this, arguments);
+superObjet.prototype.xyz.apply(this, arguments)
+
+继承lastest Version;
+function Base(baseVar){
+this.baseVar = baseVar;
+}
+
+Base.prototype.say = function(){
+alert(this.baseVar);
+}
+
+function Child(childVar, childVar2){
+Base.call(this,childVar);
+this.childVar2 = childVar2;
+}
+
+Child.prototype = Object.create(Base.prototype);
+Child.prototype.constructor = Child;
+
+
+
+Pseudo-classical pattern
+// --------- the base object ------------
+function Animal(name) {
+this.name = name
+}
+
+// methods
+Animal.prototype.run = function() {
+alert(this + " is running!")
+}
+
+Animal.prototype.toString = function() {
+return this.name
+}
+
+
+// --------- the child object -----------
+function Rabbit(name) {
+Rabbit.parent.constructor.apply(this, arguments)
+}
+
+// inherit
+extend(Rabbit, Animal)
+
+// override
+Rabbit.prototype.run = function() {
+Rabbit.parent.run.apply(this)
+alert(this + " bounces high into the sky!")
+}
+
+var rabbit = new Rabbit('Jumper')
+rabbit.run()
+
+
+All in one:
+function Animal(name) {
+this.name = name
+this.run = function() {
+alert("running "+this.name)
+}
+}
+
+var animal = new Animal('Foxie')
+animal.run()
+
+function Rabbit(name) {
+var rabbit = Animal(name)
+
+var parentRun = rabbit.run
+
+rabbit.jump = function() {
+alert(name + " jumped!")
+}
+
+rabbit.run = function() {
+parentRun.call(this)
+alert("fast")
+}
+
+return rabbit
+}
+
+rabbit = Rabbit("rab")
+
+Factory constructor pattern
+function Animal(name) {
+return {
+run: function() {
+alert(name + " is running!")
+}
+}
+}
+
+function Rabbit(name) {
+Animal.apply(this, arguments)
+
+var parentRun = this.run
+
+this.jump = function() {
+alert(name + " jumped!")
+}
+
+this.run = function() {
+parentRun.call(this)
+alert("fast")
+}
+}
+
+rabbit = new Rabbit("rab")
+
+Extend:
+$(...).clone() just copy dom element
+/ Shallow copy
+var newObject = jQuery.extend({}, oldObject);
+
+// Deep copy
+var newObject = jQuery.extend(true, {}, oldObject);
+
+http://geniuscarrier.com/copy-object-in-javascript/
+
+带构造函数的继承
+function extend(Child, Parent) {
+var F = function () { };
+F.prototype = Parent.prototype;
+Child.prototype = new F();
+Child.prototype.constructor = Child;
+Child.uber = Parent.prototype;
+}
+
+
+不待构造函数的继承
+function deepCopy(p, c) {
+var c = c || {};
+for (var i in p) {
+if (typeof p[i] === 'object') {
+c[i] = (p[i].constructor === Array) ? [] : {};
+deepCopy(p[i], c[i]);
+} else {
+c[i] = p[i];
+}
+}
+return c;
+}
+
+23. What is a potential pitfall with using typeof bar === "object" to determine if bar is an object? How can this pitfall be avoided?
+if bar is null, it will return true;
+if bar is [], it will return true;
+if bar is undefined, typeof bar is undefined;
+
+24. What is the significance of, and reason for, wrapping the entire content of a JavaScript source file in a function block?
+creates a closure around the entire contents of the file which, perhaps most importantly, creates a private namespace and thereby helps avoid potential name clashes between different JavaScript modules and libraries.
+
+Another feature of this technique is to allow for an easily referenceable (presumably shorter) alias for a global variable.
+
+25.Ajax跨域问题
+不同的domian无法通过ajax来传递值
+jsonp
+——————— http://b.com/index ———————-
+
+<script src="jquery-1.4.2.js" type="text/javascript"]] > </script>
+<script type="text/javascript">
+function fun1()
+{
+$.getJSON("http://a.com/c.php?no=10&msg=ok&format=json&jsoncallback=?",
+function(data){
+alert(data.msg);
+});
+}
+</script>
+<button type="button" onclick="fun1()">跨域处理</button>
+
+——————– http://a.com/c.php ———————-
+
+<?php
+$no = $_GET['no'];
+$msg = $_GET['msg'];
+$json = json_encode(array('no'=>$no,'msg'=>$msg));
+//必需以下这样输出
+echo $_GET['jsoncallback'].'('.$json.')';
+
+
+
+
+
 
 Coding Challenge:
 1. Make this work:
@@ -377,6 +601,983 @@ The output of this code will be 456 (not 123).
 
 The reason for this is as follows: When setting an object property, JavaScript will implicitly stringify the parameter value. In this case, since b and c are both objects, they will both be converted to "[object Object]". As a result, a[b] anda[c] are both equivalent to a["[object Object]"] and can be used interchangeably. Therefore, setting or referencing a[c] is precisely the same as setting or referencing a[b].
 
+8. iPhone 格式布局
+<div class="screen">  
+<div class="app-icon">
+<span>center</span>
+</div>
+<div class="app-icon"></div>
+<div class="app-icon"></div>
+<div class="app-icon"></div>
+<div class="app-icon"></div>
+<div class="app-icon"></div>
+<div class="app-icon"></div>
+</div>
+
+.app-icon {
+border-radius: 15%;
+float: left;
+width: 20%;
+height: 0px;
+padding-top: 20%;
+display: block;
+background: #000;
+margin-left: 4%;
+margin-top: 4%;
+position: relative;
+}
+
+or
+
+.app-icon{
+width: 20vw;
+height: 20vw;
+}
+
+.screen{
+width: 100%;
+}
+
+span {
+position: absolute;
+top: 0;
+left: 0;
+color: red;
+}
+
+
+second way:
+html:
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>JS Bin</title>
+</head>
+<body>
+<div class="iphone-container">
+<div class="item"><div>a</div></div>
+<div class="item"><div>a</div></div>
+<div class="item"><div>a</div></div>
+<div class="item"><div>a</div></div>
+<div class="item"><div>a</div></div>
+<div class="item"><div>a</div></div>
+<div class="item"><div>a</div></div>
+<div class="item"><div>a</div></div>
+<div class="item"><div>a</div></div>
+</div>
+</body>
+</html>
+
+css:
+.iphone-container {
+width: 100vw;
+height:100vh;
+margin: 0 auto;
+}
+
+.item {
+width: 25vw;
+float: left;
+border: 1px solid #ccc;
+box-sizing: border-box;
+text-align: center;
+background-image: url('https://lh4.ggpht.com/wKrDLLmmxjfRG2-E-k5L5BUuHWpCOe4lWRF7oVs1Gzdn5e5yvr8fj-ORTlBF43U47yI=w300-rw');
+background-size: cover;
+margin: 10px;
+position: relative;
+}
+
+.item div {
+position: absolute;
+top: 50%;
+left: 50%
+}
+
+.item:before {
+display: block;
+content: "";
+padding-top: 100%;
+}
+
+div:nth-child(1) {
+background-color: green;
+border-color:#000;
+border-width:5px;
+border-style: solid;
+}
+
+9. 2-column, left sidebar
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>JS Bin</title>
+</head>
+<body>
+<div class="container">
+<div class="sidebar-left">left sidebar</div>
+<div class="content">content</div>
+</div>
+</body>
+</html>
+
+.container {
+width: 50%;
+border: 1px solid #000;
+}
+
+.sidebar-left {
+width: 50px;
+height: 100vh;
+float: left;
+background: #fff;
+}
+
+.content {
+background: #ccc;
+height: 100vh;
+}
+
+10. 3-column, content responsive
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>JS Bin</title>
+</head>
+<body>
+<div class="container">
+<div class="sidebar-left">left sidebar</div>
+<div class="content">content dskd fejfe fef feffjf ejfjfj</div>
+<div class="sidebar-right">right sidebar</div>
+</div>
+</body>
+</html>
+
+.container {
+width: 80%;
+border: 1px solid #000;
+position: relative;
+overflow: auto;
+}
+
+.sidebar-left {
+width: 50px;
+height: 100vh;
+position: absolute;
+background: #fff;
+left: 0;
+}
+
+.content {
+background: #ccc;
+height: 100vh;
+float: left;
+padding-left:60px;
+padding-right:60px;
+}
+
+.sidebar-right {
+position: absolute;
+right: 0;
+height:100vh;
+width: 50px;
+background: red;
+}
+
+10. css 实现dropdown menu:
+<nav>
+<ul>
+<li>
+<a href="#">Main Menu 1</a>
+<ul class="sub-menu">
+<li>sub menu 1</li>
+<li>sub menu 2</li>
+</ul>
+</li>
+<li >
+<a href="#">Main Menu 2</a>
+<ul class="sub-menu">
+<li>sub menu 1</li>
+<li>sub menu 2</li>
+</ul>
+</li>
+</ul>
+</nav>
+
+
+li{
+display: inline-block;
+position: relative;
+height: 30px;
+width: 100px;
+}
+
+.sub-menu{
+display: none;
+position: absolute;
+top: 30px;
+left: 0;
+padding: 20px;
+background:rgba(0,0,0,0.8);
+}
+
+li:hover .sub-menu{
+display: block;
+}
+
+11. stick footer bottom 5 ways:
+s1. 
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>JS Bin</title>
+<style id="jsbin-css">
+html, body {
+height: 100%;
+margin: 0;
+}
+
+.wrapper {
+min-height: 100%;
+width: 100%;
+background-color: #ccc;
+margin-bottom: -60px;
+}
+
+.wrapper:after {
+display: block;
+content: '';
+height: 60px;
+}
+
+.footer {
+width: 100%;
+background: #aaa;
+height:60px;
+}
+
+
+</style>
+</head>
+<body>
+<div class="wrapper">
+content
+</div>
+<div class="footer">footer</div>
+
+s2.
+body {
+margin: 0;
+}
+
+.header {
+width: 100%;
+background: #ccc;
+height: 50px;
+position: relative;
+}
+
+.content {
+width: 100%;
+background: red;
+min-height: 100vh;
+margin-bottom: -50px;
+padding-top: 50px;
+box-sizing: border-box;
+margin-top: -50px;
+padding-bottom: 50px;
+}
+
+.footer {
+width: 100%;
+background: #aaa;
+height:50px;
+}
+
+
+</style>
+</head>
+<body>
+<div class="header">header</div>
+<div class="content">
+The big problem with the above three techniques is that they require fixed height footers. Fixed heights are generally a bummer in web design. Content can change. Things are flexible. Fixed heights are usually red flag territory. Using flexbox for a sticky footer not only doesn't require any extra elements, but allows for a variable height footer.
+<br />
+Notice the 70px in the calc() vs. the 50px fixed height of the footer. That's making an assumption. An assumption that the last item in the content has a bottom margin of 20px. It's that bottom margin plus the height of the footer that need to be added together to subtract from the viewport height. And yeah, we're using viewport units here as another little trick to avoid having to set 100% body height before you can set 100% wrapper height.
+</div>
+<div class="footer">footer</div>
+</body>
+
+s3.
+<style id="jsbin-css">
+html {
+height: 100%;
+}
+
+.header {
+width: 100%;
+background: #ccc;
+height: 50px;
+position: relative;
+}
+
+body {
+min-height: 100%;
+display: flex;
+flex-direction: column;
+margin: 0;
+}
+
+.content {
+flex: 1;
+}
+
+.footer {
+width: 100%;
+background: #aaa;
+min-height:50px;
+}
+
+
+</style>
+</head>
+<body>
+<div class="header">header</div>
+<div class="content">
+The big problem with the above three techniques is that they require fixed height footers. Fixed heights are generally a bummer in web design. Content can change. Things are flexible. Fixed heights are usually red flag territory. Using flexbox for a sticky footer not only doesn't require any extra elements, but allows for a variable height footer.
+<br />
+Notice the 70px in the calc() vs. the 50px fixed height of the footer. That's making an assumption. An assumption that the last item in the content has a bottom margin of 20px. It's that bottom margin plus the height of the footer that need to be added together to subtract from the viewport height. And yeah, we're using viewport units here as another little trick to avoid having to set 100% body height before you can set 100% wrapper height.
+</div>
+<div class="footer">footer</div>
+</body>
+
+s4*. grid
+
+
+12. Discuss possible ways to write a function isInteger(x) that determines if x is an integer.
+
+Number.prototype.isInteger = function(x){
+return (x^0) === x; 
+}
+
+Number.prototype.isInteger = function(x){
+return Math.round(x) === x;
+}
+
+13.Write a sum method which will work properly when invoked using either syntax below.
+
+console.log(sum(2,3));   // Outputs 5
+console.log(sum(2)(3));  // Outputs 5
+
+function sum(x){
+if( arguments.length === 2 ) return arguments[0] + arguments[1];
+else{
+return function(y){
+return x + y;
+}
+}
+}
+
+14. The following recursive code will cause a stack overflow if the array list is too large. How can you fix this and still retain the recursive pattern?
+
+var list = readHugeList();
+
+var nextListItem = function() {
+var item = list.pop();
+
+if (item) {
+// process the list item...
+nextListItem();
+
+}
+};
+
+//solution:
+setTimeout( nextListItem, 0);
+The stack overflow is eliminated because the event loop handles the recursion, not the call stack. When nextListItem runs, if item is not null, the timeout function (nextListItem) is pushed to the event queue and the function exits, thereby leaving the call stack clear. When the event queue runs its timed-out event, the next item is processed and a timer is set to again invoke nextListItem. Accordingly, the method is processed from start to finish without a direct recursive call, so the call stack remains clear, regardless of the number of iterations.
+
+
+15. What will be the output of the following code:
+
+for (var i = 0; i < 5; i++) {
+setTimeout(function() { console.log(i); }, i * 1000 );
+}
+
+Explain your answer. How could the use of closures help here?
+
+
+for (var i = 0; i < 5; i++) {
+(function(i){
+setTimeout(function() { console.log(i); }, i * 1000 );
+}(i));
+}
+
+16. The code will output the following four lines:
+1 && 2 //2
+评估1 true then 评估2 true, && 返回表达式（2）；
+
+17. What will the following code output to the console and why:
+
+var hero = {
+_name: 'John Doe',
+getSecretIdentity: function (){
+return this._name;
+}
+};
+
+var stoleSecretIdentity = hero.getSecretIdentity;
+
+console.log(stoleSecretIdentity()); //undefined
+console.log(hero.getSecretIdentity()); // John Doe
+
+What is the issue with this code and how can it be fixed.
+fix:
+var stoleSecretIdentity = stoleSecretIdentity.bind(hero);
+
+
+18. Create a function that, given a DOM Element on the page, will visit the element itself and all of its descendents (not just its immediate children). For each element visited, the function should pass that element to a provided callback function.
+
+The arguments to the function should be:
+
+a DOM element
+a callback function (that takes a DOM element as its argument)
+
+
+function traverse(element,callback){
+callback(element);
+var childElement = element.children;
+for( var i = 0; i < childElement.lenght; i++ ){
+traverse(childElement[i], callback);
+}
+}
+
+
+
+<a href="#">
+Checkout
+</a>
+
+a {
+border-radius: 6px;
+box-shadow: 1px 1px 5px -3px #555;
+color: rgb(85, 85, 85);
+display: block;
+font-family: arial;
+font-weight: bold;
+height: 50px;
+line-height: 50px;
+margin: 50px;
+padding-top: 0;
+position: relative;
+text-align: center;
+text-decoration: none;
+text-transform: uppercase;
+width: 200px;
+}
+
+a:before, a:after {
+border-radius: 12px;
+bottom: 1px;
+content: " ";
+display: block;
+position: absolute;
+z-index: -1;
+}
+
+a:before {
+background: none repeat scroll 0 0 #fff;
+border: 2px solid rgb(85, 85, 85);
+box-shadow: 1px 1px 3px 2px #ccc;
+height: 64px;
+width: 218px;
+left: -14px;
+top: -7px;
+}
+
+a:after {
+background: linear-gradient(to bottom, #dddddd 0%, #dddddd 44%, #adadad 69%, #adadad 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+border: 6px solid #ccc;
+color: #666;
+content: "\2605 \2605";
+font-size: 25px;
+height: 47px;
+left: -7px;
+letter-spacing: 94px;
+line-height: 39px;
+padding-left: 40px;
+text-align: left;
+top: -3px;
+width: 155px;
+text-indent : -3px;
+}
+
+
+请写一个简单的幻灯效果页面
+
+
+- 如果不使用JS来完成，可以加分。
+
+<DOCTYPE HTML>
+<html>
+<head></head>
+<style>
+@keyframes slide{
+0%{
+opacity : 0;
+}
+10%{
+opacity : 1;
+}
+50%{
+opacity : 1;
+}
+60%{
+opacity : 0;
+}
+100%{
+opacity : 0;
+}
+}
+
+div{
+position : relative;
+width:400px;
+height:300px;
+overflow:  hidden;
+}
+img{
+position: absolute;
+left : 0px ;
+top : 0px;
+opacity : 0;
+animation-name : slide;
+animation-duration : 10s;
+animation-iteration-count : infinite;
+}
+img:first-child{
+animation-delay : 0s;
+z-index : 999;
+}
+img:nth-child(2){
+animation-delay : 5s;
+z-index : 99;
+}
+
+</style>
+<body>
+<div>
+<img width="400" src="1.jpg" />
+<img width="400" src="2.jpg" />
+</div>
+</body>
+</html>
+
+<DOCTYPE HTML>
+<html>
+<head></head>
+<style>
+
+div{
+width : 400px;
+height : 300px;
+overflow : hidden;
+}
+div > div{
+width : 1600px;
+}
+img{
+display : inline-block;
+animation-name : slideshow;
+animation-duration : 10s;
+animation-iteration-count : infinite;
+}
+
+div >div:hover img{
+animation-play-state: paused;
+}
+
+@keyframes slideshow{
+0% {
+transform : translateX(0px);
+}
+5%{
+transform : translateX(0px);
+}
+
+45%{
+transform : translateX(0px);
+}
+55%{
+transform : translateX(-400px);
+}
+
+
+95%{
+transform : translateX(-400px);
+}
+100%{
+transform : translateX(-800px);
+}
+}
+
+</style>
+<body>
+<div>
+<div>
+<img width="400" src="1.jpg" /><!--
+                                --><img width="400" src="2.jpg" /><!--
+                                                                   --><img width="400" src="1.jpg" />
+</div>
+</div>
+</body>
+
+event delegation:
+Event delegation allows us to attach a single event listener, to a parent element, that will fire for all descendants matching a selector, whether those descendants exist now or are added in the future.
+
+document.getElementById("parent-list").addEventListener("click",function(e) {
+// e.target is the clicked element!
+// If it was a list item
+if(e.target && e.target.nodeName == "LI") {
+// List item found!  Output the ID!
+console.log("List item ",e.target.id.replace("post-")," was clicked!");
+}
+});
+
+
+#cloud.animate {
+animation-name: cloud;
+animation-duration: 12s;
+animation-timing-function: ease;
+animation-iteration-count: 1; 
+animation-direction: normal;
+animation-delay: 0;
+animation-play-state: running;
+animation-fill-mode: forwards;
+}
+
+@keyframes cloud {
+
+0% {
+opacity: 0;
+left: -100px;
+}
+
+50% {
+opacity: 1;
+}
+
+75% {
+opacity: 1;
+left: 100px;
+}
+
+100% {
+opacity: 0;
+left: 500px;
+}
+
+}
+
+18. http://codepen.io/anon/pen/qbJWVy
+<div class="progress-bar">
+<div class="inner"></div>
+</div>
+
+<input type="button" value="add" id="add" />
+
+.progress-bar{
+width: 100%;
+height: 30px;
+border: 1px solid red;
+border-radius: 15px;
+overflow: hidden;
+}
+
+.inner{
+height: 100%;
+background: red;
+animation: 2s progressing;
+}
+
+@keyframes progressing{
+from{ width: 0}
+to{ width: 100%}
+}
+
+
+(function(){
+var runningFlag = 0;
+
+$("#add").on("click",function(){
+$("body").append("<div class='progress-bar'></div>");
+if( !runningFlag ){
+check();
+}
+});
+
+$("body").on("animationstart",".inner",function(){
+runningFlag = 1;             
+});
+
+$("body").on("animationend",".inner",function(){
+$(this).parent().addClass("end");
+runningFlag = 0;
+check();
+});
+
+function check(){
+var elmCache = $(".end").eq(-1).nextAll(".progress-bar");
+if( elmCache.length ){
+elmCache.eq(0).append('<div class="inner"></div>');
+}
+}
+
+}());
+
+19. 中间自适应
+css left-center-right
+
+<div class="left">left</div>
+<div class="center">center</div>
+<div class="right">right</div>
+div{
+background: #ccc;
+border: 2px solid #000;
+float:left;
+box-sizing: border-box;
+}
+
+.left{
+width: 100px;
+}
+
+.right{
+width: 100px;
+float: right;
+}
+
+.center{
+width: calc(100% - 200px); 
+}
+
+
+
+<div class="left">left</div>
+<div class="right">right</div>
+<div class="center">center</div>
+
+div{
+background: #ccc;
+border: 2px solid #000;
+float:left;
+box-sizing: border-box;
+}
+
+.left{
+width: 100px;
+}
+
+.right{
+width: 100px;
+float: right;
+}
+
+.center{
+width: 100%;
+margin: 0 -100px;
+padding: 0 100px;
+position: relative;
+z-index: -1;
+}
+
+20. requestAnimationFrame and cancelAnimationFrame 例子
+
+var run = true, a, mWidth = window.innerWidth, i = 1, ltr = true;
+var div = document.createElement("div");
+div.style.width = "100px";
+div.style.height = "100px";
+div.style.background = "red";
+document.body.appendChild(div);
+div.id = "d";
+div.style.position= "absolute";
+div.style.left = "0px";
+div.style.top = "0px";
+div.style.zIndex = "999999999";
+div.style.borderRadius="50%";
+div.style.cursor="pointer";
+div.innerHTML = "<div style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);'>----------------</div>"
+
+document.getElementById("d").addEventListener("click",function(){
+if(run){
+window.requestAnimationFrame(render);
+}else{
+window.cancelAnimationFrame(a);
+}  
+run = !run;
+});
+
+
+function render(){
+if(ltr) {
+div.style.left = parseInt(div.style.left)+i + "px";
+div.style.transform="rotate("+parseInt(div.style.left)+"deg)";
+}else{
+div.style.left = parseInt(div.style.left)-i + "px";
+div.style.transform="rotate("+parseInt(div.style.left)+"deg)";
+}
+if( parseInt(div.style.left) === 0|| parseInt(div.style.left) === mWidth - 100 ) ltr = !ltr;
+a = window.requestAnimationFrame(render);
+}
+
+21. Amazon
+var a = {
+"name" : "div",
+"children": [
+{
+"name": "div",
+"children" : [
+{
+"name":"span"
+}
+]
+},{
+"name": "span"
+}
+]
+}
+
+function calculateElement(elementObj){
+var hash = {};
+return fetchData(elementObj, hash);
+
+}
+
+function fetchData(elementObj,hash){
+
+if( hash[elementObj["name"]] === undefined ) hash[elementObj["name"]] = 1;
+else hash[elementObj["name"]]++;
+
+if( elementObj["children"] !== undefined ){
+elementObj["children"].map(function(item){
+
+fetchData(item,hash);
+
+});
+}
+
+return hash;
+
+}
+
+
+22.
+var a = [{
+"id": 1,
+"name": {
+"first_name" : "Craig",
+"last_name": "Phillips",
+},
+"email": "cphillips0@disqus.com",
+"country": "China",
+"ip_address": "91.71.153.92"
+}, {
+"id": 2,
+"name": {
+"first_name" : "Lori",
+"last_name": "Gray",
+},
+"email": "lgray1@berkeley.edu",
+"country": "Tanzania",
+"ip_address": "225.194.188.254"
+}, {
+"id": 3,
+"name": {
+"first_name" : "John",
+"last_name": "Sullivan",
+},
+"email": "jsullivan2@si.edu",
+"country": "Argentina",
+"ip_address": "156.37.164.164"
+}, {
+"id": 4,
+"name": {
+"first_name" : "Gloria",
+"last_name": "Ramirez",
+},
+"email": "gramirez3@ftc.gov",
+"country": "Russia",
+"ip_address": "21.19.199.1"
+}, {
+"id": 5,
+"name": {
+"first_name" : "Edward",
+"last_name": "Mendoza",
+},
+"email": "emendoza4@house.gov",
+"country": "Russia",
+"ip_address": "134.131.221.72"
+}];
+
+//var b = a[0];
+//readJson(a);
+//fetchData("first_name",a);
+fetchItem(2,a);
+
+function fetchItem(id,jsonData){
+var getData = 0;
+for(var i in jsonData){
+if( typeof jsonData[i] =="object"){
+fetchItem(id, jsonData[i]);
+}else{
+if( i == "id" && jsonData["id"] == id ) getData = 1;
+else if( i == "id" && jsonData["id" != id]) getData = 0;
+
+if( getData == 1){
+document.getElementById("fetch-item").innerHTML = document.getElementById("fetch-item").innerHTML+ "<li>"+ i + ":" + jsonData[i]+"</li>" ;
+}
+}
+}
+}
+
+function readJson(jsonData){
+for(var i in jsonData){
+if( typeof jsonData[i] == "object" ){
+readJson(jsonData[i]);
+}else{
+document.getElementById("abccedf").innerHTML = document.getElementById("abccedf").innerHTML+ "<li>"+ i + ":" + jsonData[i]+"</li>" ;
+}
+}
+}
+
+function fetchData(dataName, jsonData){
+for(var i in jsonData){
+if( typeof jsonData[i] == "object" ){
+fetchData(dataName, jsonData[i]);
+}else{
+if( i == dataName ){
+document.getElementById("fetch-data").innerHTML += "<li>" + i + ":" + jsonData[i] + "</li>";
+}
+}
+}
+}
+
+<ul id="abccedf"><li>go-through</li></ul>
+<ul id="fetch-data"><li>fetch-data</li></ul>
+<ul id="fetch-item"><li>fetch-item</li></ul>
+
+
+
+Reference:
+Json question: https://modernpathshala.com/Learn/JSON/Interview
+http://javascript-puzzlers.herokuapp.com/
+https://github.com/darcyclarke/Front-end-Developer-Interview-Questions
+http://www.smashingmagazine.com/2013/07/08/choosing-a-responsive-image-solution/
+http://css-tricks.com/interview-questions-css/
+http://darcyclarke.me/development/front-end-job-interview-questions/
 
 
 
