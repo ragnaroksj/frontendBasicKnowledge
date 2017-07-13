@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<head>
+    <title>Table</title>
+<style>
+    table {
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        font-family: arial;
+    }
+
+    tbody tr:nth-child(odd) {
+    background: #ccc;
+    }
+</style>
+<script type="text/javascript">
+var tableOperation = {
+  defaultSettings: {
+    column: 3
+  },
+
+  insertRow: function(index) {
+    var tBody = document.getElementsByTagName('tbody');
+    var newRow = document.createElement('tr');
+    for (var i = 0; i < tableOperation.defaultSettings.column; i++) {
+      var newColumn = document.createElement('td');
+      newColumn.innerText = 'new Row';
+      newRow.appendChild(newColumn);
+    }
+
+    if (index === -1 || index === undefined) {
+      tBody[0].appendChild(newRow);
+    } else {
+      tBody[0].insertBefore(newRow, tBody[0].children[index]);
+    }
+  },
+
+  removeRow: function(index) {
+    var rows = document.getElementsByTagName('tBody')[0].children;
+    rows[index-1].remove();
+  }
+}
+
+window.onload = function() {
+  // tableOperation.insertRow();
+  // tableOperation.insertRow(1);
+  // tableOperation.insertRow(-1);
+  tableOperation.removeRow(2);
+}
+
+</script>
+</head>
+<body>
+  build a table and create a table.js to implement insert row, remove row
+  <table>
+    <thead>
+      <tr>
+        <th>column1</th>
+        <th>column2</th>
+        <th>column3</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>row 1</td>
+        <td>row 1</td>
+        <td>row 1</td>
+      </tr>
+      <tr>
+        <td>row 2</td>
+        <td>row 2</td>
+        <td>row 2</td>
+      </tr>
+      <tr>
+        <td>row 3</td>
+        <td>row 3</td>
+        <td>row 3</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
